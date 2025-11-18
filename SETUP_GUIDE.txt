@@ -1,0 +1,215 @@
+╔════════════════════════════════════════════════════════════════════════════╗
+║                                                                            ║
+║    AI-Enhanced Microfinance Loan Management System (MLMS)                 ║
+║    Complete Setup Guide for Windows                                       ║
+║                                                                            ║
+╚════════════════════════════════════════════════════════════════════════════╝
+
+📋 QUICK SETUP (Using Batch Scripts)
+────────────────────────────────────────────────────────────────────────────
+
+STEP 1: Setup Backend
+   → Double-click: setup_backend.bat
+   → Wait for completion (1-2 minutes)
+
+STEP 2: Setup Frontend  
+   → Double-click: setup_frontend.bat
+   → Wait for completion (2-3 minutes)
+
+STEP 3: Start Backend Server
+   → Double-click: start_backend.bat
+   → Leave this window open!
+   → Backend will run on http://localhost:8000
+
+STEP 4: Start Frontend Server
+   → Double-click: start_frontend.bat
+   → Leave this window open!
+   → Frontend will run on http://localhost:3000
+
+STEP 5: Open Application
+   → Open browser: http://localhost:3000
+   → Start using the application! 🎉
+
+────────────────────────────────────────────────────────────────────────────
+
+🔧 MANUAL SETUP (Alternative Method)
+────────────────────────────────────────────────────────────────────────────
+
+Prerequisites:
+✓ Python 3.8 or higher installed
+✓ Node.js 16 or higher installed
+
+Backend Setup:
+1. Open Command Prompt or PowerShell
+2. cd backend
+3. python -m venv venv
+4. venv\Scripts\activate
+5. pip install -r requirements.txt
+
+Frontend Setup:
+1. Open NEW Command Prompt or PowerShell
+2. cd frontend
+3. npm install
+
+Running:
+Terminal 1: cd backend && venv\Scripts\activate && uvicorn main:app --reload
+Terminal 2: cd frontend && npm run dev
+
+────────────────────────────────────────────────────────────────────────────
+
+📂 PROJECT STRUCTURE
+────────────────────────────────────────────────────────────────────────────
+
+Hackathon/
+├── backend/                    (FastAPI Backend)
+│   ├── main.py                (API endpoints)
+│   ├── database.py            (Database models)
+│   ├── ai_models.py           (AI risk scoring)
+│   ├── requirements.txt       (Python dependencies)
+│   └── mlms_database.db       (SQLite DB - auto-created)
+│
+├── frontend/                   (React Frontend)
+│   ├── src/
+│   │   ├── components/        (React components)
+│   │   ├── App.jsx           (Main app)
+│   │   ├── api.js            (API calls)
+│   │   └── index.css         (Styles)
+│   ├── package.json          (Node dependencies)
+│   └── vite.config.js        (Vite config)
+│
+├── setup_backend.bat          (Backend setup script)
+├── setup_frontend.bat         (Frontend setup script)
+├── start_backend.bat          (Start backend server)
+├── start_frontend.bat         (Start frontend server)
+├── README.md                  (Full documentation)
+├── QUICKSTART.md              (Quick start guide)
+├── ARCHITECTURE.md            (Architecture details)
+└── DATABASE_SCHEMA.sql        (Database schema)
+
+────────────────────────────────────────────────────────────────────────────
+
+✨ KEY FEATURES
+────────────────────────────────────────────────────────────────────────────
+
+MODULE 1: Client Onboarding & Risk Profiling
+   ✓ Register new clients
+   ✓ AI-powered risk scoring (0-100)
+   ✓ Automatic risk categorization (Low/Medium/High)
+
+MODULE 2: Loan Application & Smart Schedule Generation
+   ✓ Create loans for clients
+   ✓ AI-powered loan recommendations
+   ✓ Automatic repayment schedule generation
+
+MODULE 3: Repayment Tracking & Default Alerts
+   ✓ Track installment payments
+   ✓ AI-powered default risk alerts
+   ✓ Payment progress monitoring
+
+MODULE 4: Dashboard & Analytics
+   ✓ Comprehensive statistics
+   ✓ Interactive charts (Recharts)
+   ✓ Real-time alerts
+
+────────────────────────────────────────────────────────────────────────────
+
+🔍 VERIFICATION
+────────────────────────────────────────────────────────────────────────────
+
+Backend Running:
+   → Visit: http://localhost:8000/docs
+   → You should see FastAPI Swagger documentation
+
+Frontend Running:
+   → Visit: http://localhost:3000
+   → You should see the MLMS application
+
+Database Created:
+   → Check backend folder for: mlms_database.db
+
+────────────────────────────────────────────────────────────────────────────
+
+❓ TROUBLESHOOTING
+────────────────────────────────────────────────────────────────────────────
+
+Problem: "Python not found"
+   Solution: Install Python from https://www.python.org/downloads/
+             Make sure to check "Add Python to PATH"
+
+Problem: "Node not found"
+   Solution: Install Node.js from https://nodejs.org/
+
+Problem: Port already in use
+   Solution: Close other applications or change ports:
+             Backend: uvicorn main:app --reload --port 8001
+             Frontend: Vite will auto-suggest alternate port
+
+Problem: Module import errors
+   Solution: Re-run setup_backend.bat or:
+             cd backend
+             venv\Scripts\activate
+             pip install -r requirements.txt
+
+Problem: Database errors
+   Solution: Delete mlms_database.db and restart backend
+
+Problem: Frontend won't start
+   Solution: Re-run setup_frontend.bat or:
+             cd frontend
+             npm install
+
+────────────────────────────────────────────────────────────────────────────
+
+📚 DOCUMENTATION
+────────────────────────────────────────────────────────────────────────────
+
+README.md           - Complete documentation with usage guide
+QUICKSTART.md       - Quick start guide (5 minutes)
+ARCHITECTURE.md     - Detailed system architecture
+DATABASE_SCHEMA.sql - Complete database schema with examples
+
+────────────────────────────────────────────────────────────────────────────
+
+🎯 USAGE EXAMPLE
+────────────────────────────────────────────────────────────────────────────
+
+1. Register Client:
+   → Client Onboarding tab
+   → Fill form: Name, CNIC, Income, etc.
+   → Click "Register & Calculate Risk Score"
+   → AI automatically calculates risk!
+
+2. Create Loan:
+   → Loan Application tab
+   → Select client, enter amount
+   → Click "Get AI-Powered Loan Suggestions"
+   → Review AI recommendations
+   → Click "Create Loan & Generate Schedule"
+   → Automatic repayment schedule created!
+
+3. Track Payments:
+   → Repayment Tracking tab
+   → Select loan
+   → View installments
+   → Click "Mark as Paid"
+   → AI monitors for default risk!
+
+4. View Analytics:
+   → Dashboard tab
+   → See statistics and charts
+   → Monitor alerts
+
+────────────────────────────────────────────────────────────────────────────
+
+🎉 THAT'S IT!
+────────────────────────────────────────────────────────────────────────────
+
+You now have a complete, fully functioning AI-Enhanced Microfinance Loan
+Management System ready for your hackathon!
+
+For detailed information, see README.md
+
+Happy Coding! 🚀
+
+────────────────────────────────────────────────────────────────────────────
+
