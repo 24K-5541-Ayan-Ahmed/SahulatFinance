@@ -4,6 +4,7 @@ import ClientOnboarding from "./components/ClientOnboarding";
 import LoanApplication from "./components/LoanApplication";
 import RepaymentTracker from "./components/RepaymentTracker";
 import Login from "./components/Login";
+import Logo from "./logo.png";
 
 const IconDashboard = () => (
   <svg viewBox="0 0 24 24" aria-hidden="true">
@@ -166,7 +167,9 @@ function App() {
     <div className="app-shell">
       <aside className={`sidebar ${isSidebarOpen ? "is-open" : ""}`}>
         <div className="sidebar__logo">
-          <div className="sidebar__logo-badge">SF</div>
+          <div className="sidebar__logo-badge">
+            <img src={Logo} alt="SahulatFin logo" />
+          </div>
           <h1>SahulatFin</h1>
           <span>AI-enhanced loan management</span>
         </div>

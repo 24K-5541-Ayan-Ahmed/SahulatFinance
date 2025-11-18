@@ -78,6 +78,13 @@ body {
   font-size: 1.4rem;
 }
 
+.sidebar__logo-badge img,
+.login-logo-badge img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
 .sidebar__logo h1 {
   font-size: 1.1rem;
   font-weight: 600;
@@ -784,10 +791,21 @@ tbody tr:hover td {
   gap: 1rem;
 }
 
+.login-logo-badge {
+  width: 64px;
+  height: 64px;
+  border-radius: 18px;
+  background: rgba(87, 74, 251, 0.12);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.4rem;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.4);
+}
+
 .login-card__brand .login-logo-badge {
   width: 56px;
   height: 56px;
-  font-size: 1.3rem;
 }
 
 .login-card__brand h1 {

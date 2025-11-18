@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { login } from "../api";
+import Logo from "../logo.png";
 
 const FEATURE_PILLS = [
   "Client 360° dossiers",
@@ -80,7 +81,9 @@ function Login({ onLogin }) {
       <div className="login-panel login-panel--form">
         <div className="login-card">
           <div className="login-card__brand">
-            <div className="login-logo-badge">SF</div>
+            <div className="login-logo-badge">
+              <img src={Logo} alt="SahulatFin logo" />
+            </div>
             <div>
               <h1>SahulatFin</h1>
               <span>AI-enhanced loan management</span>
