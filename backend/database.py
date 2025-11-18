@@ -74,6 +74,16 @@ class Installment(Base):
     loan = relationship("Loan", back_populates="installments")
 
 
+class User(Base):
+    __tablename__ = "users"
+    
+    id = Column(Integer, primary_key=True, index=True)
+    username = Column(String, unique=True, nullable=False, index=True)
+    hashed_password = Column(String, nullable=False)
+    is_admin = Column(Boolean, default=False)
+    created_at = Column(DateTime, default=datetime.utcnow)
+
+
 # Create all tables
 def init_db():
     Base.metadata.create_all(bind=engine)

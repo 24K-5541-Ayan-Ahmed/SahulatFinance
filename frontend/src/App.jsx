@@ -3,6 +3,7 @@ import Dashboard from "./components/Dashboard";
 import ClientOnboarding from "./components/ClientOnboarding";
 import LoanApplication from "./components/LoanApplication";
 import RepaymentTracker from "./components/RepaymentTracker";
+import Login from "./components/Login";
 
 const IconDashboard = () => (
   <svg viewBox="0 0 24 24" aria-hidden="true">
@@ -89,6 +90,17 @@ function App() {
   const [activeTab, setActiveTab] = useState("dashboard");
   const [isSidebarOpen, setSidebarOpen] = useState(true);
   const [isMobile, setIsMobile] = useState(getIsMobile);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [checkingAuth, setCheckingAuth] = useState(true);
+
+  useEffect(() => {
+    // Check if user is already logged in
+    const token = localStorage.getItem("auth_token");
+    if (token) {
+      setIsAuthenticated(true);
+    }
+    setCheckingAuth(false);
+  }, []);
 
   useEffect(() => {
     const handler = () => setIsMobile(getIsMobile());
@@ -99,6 +111,33 @@ function App() {
   useEffect(() => {
     setSidebarOpen(!isMobile);
   }, [isMobile]);
+
+  const handleLogout = () => {
+    localStorage.removeItem("auth_token");
+    localStorage.removeItem("auth_user");
+    setIsAuthenticated(false);
+  };
+
+  // Show login page if not authenticated
+  if (checkingAuth) {
+    return (
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          minHeight: "100vh",
+          background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+        }}
+      >
+        <div style={{ color: "white", fontSize: "1.2rem" }}>Loading...</div>
+      </div>
+    );
+  }
+
+  if (!isAuthenticated) {
+    return <Login onLogin={() => setIsAuthenticated(true)} />;
+  }
 
   const renderActiveComponent = () => {
     switch (activeTab) {
@@ -194,6 +233,13 @@ function App() {
               onClick={() => setActiveTab("clients")}
             >
               + New client
+            </button>
+            <button
+              className="btn btn-secondary"
+              onClick={handleLogout}
+              style={{ marginLeft: "0.5rem" }}
+            >
+              Logout
             </button>
           </div>
         </div>

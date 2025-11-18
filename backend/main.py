@@ -1,9 +1,12 @@
-from fastapi import FastAPI, Depends, HTTPException
+from fastapi import FastAPI, Depends, HTTPException, status
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from sqlalchemy.orm import Session
 from datetime import datetime, timedelta
 from typing import List, Optional
 from pydantic import BaseModel
+from jose import JWTError, jwt
+from passlib.context import CryptContext
 import database
 import ai_models
 
@@ -19,18 +22,103 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# Security setup
+SECRET_KEY = "sahulatfin-secret-key-change-in-production-2025"
+ALGORITHM = "HS256"
+ACCESS_TOKEN_EXPIRE_MINUTES = 60 * 24  # 24 hours
+
+pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+security = HTTPBearer()
+
 # Initialize database on startup
 @app.on_event("startup")
 def startup_event():
     database.init_db()
+    create_default_admin()
 
 # Initialize AI models
 risk_scorer = ai_models.RiskScorer()
 alert_system = ai_models.DefaultAlertSystem()
 
 # ============================================
+# Authentication Utilities
+# ============================================
+
+def verify_password(plain_password: str, hashed_password: str) -> bool:
+    return pwd_context.verify(plain_password, hashed_password)
+
+def get_password_hash(password: str) -> str:
+    # Bcrypt has a 72 byte limit, truncate if necessary
+    if len(password.encode('utf-8')) > 72:
+        password = password[:72]
+    return pwd_context.hash(password)
+
+def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
+    to_encode = data.copy()
+    if expires_delta:
+        expire = datetime.utcnow() + expires_delta
+    else:
+        expire = datetime.utcnow() + timedelta(minutes=15)
+    to_encode.update({"exp": expire})
+    encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
+    return encoded_jwt
+
+def create_default_admin():
+    """Create default admin user if it doesn't exist"""
+    db = database.SessionLocal()
+    try:
+        admin = db.query(database.User).filter(database.User.username == "admin").first()
+        if not admin:
+            admin_user = database.User(
+                username="admin",
+                hashed_password=get_password_hash("admin123"),
+                is_admin=True
+            )
+            db.add(admin_user)
+            db.commit()
+            print("✅ Default admin created: username='admin', password='admin123'")
+    except Exception as e:
+        print(f"Error creating default admin: {e}")
+    finally:
+        db.close()
+
+def get_current_user(
+    credentials: HTTPAuthorizationCredentials = Depends(security),
+    db: Session = Depends(database.get_db)
+):
+    """Verify JWT token and return current user"""
+    credentials_exception = HTTPException(
+        status_code=status.HTTP_401_UNAUTHORIZED,
+        detail="Could not validate credentials",
+        headers={"WWW-Authenticate": "Bearer"},
+    )
+    try:
+        token = credentials.credentials
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        username: str = payload.get("sub")
+        if username is None:
+            raise credentials_exception
+    except JWTError:
+        raise credentials_exception
+    
+    user = db.query(database.User).filter(database.User.username == username).first()
+    if user is None:
+        raise credentials_exception
+    return user
+
+# ============================================
 # Pydantic Models for Request/Response
 # ============================================
+
+class LoginRequest(BaseModel):
+    username: str
+    password: str
+
+class TokenResponse(BaseModel):
+    access_token: str
+    token_type: str
+    username: str
+    is_admin: bool
 
 class ClientCreate(BaseModel):
     name: str
@@ -118,11 +206,48 @@ class LoanUpdate(BaseModel):
     status: Optional[str] = None
 
 # ============================================
+# Authentication Endpoints
+# ============================================
+
+@app.post("/api/auth/login", response_model=TokenResponse)
+def login(login_data: LoginRequest, db: Session = Depends(database.get_db)):
+    """Admin login endpoint"""
+    user = db.query(database.User).filter(database.User.username == login_data.username).first()
+    
+    if not user or not verify_password(login_data.password, user.hashed_password):
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Incorrect username or password",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+    
+    access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+    access_token = create_access_token(
+        data={"sub": user.username, "is_admin": user.is_admin},
+        expires_delta=access_token_expires
+    )
+    
+    return {
+        "access_token": access_token,
+        "token_type": "bearer",
+        "username": user.username,
+        "is_admin": user.is_admin
+    }
+
+@app.get("/api/auth/me")
+def get_current_user_info(current_user: database.User = Depends(get_current_user)):
+    """Get current logged-in user info"""
+    return {
+        "username": current_user.username,
+        "is_admin": current_user.is_admin
+    }
+
+# ============================================
 # MODULE 1: Client Onboarding & Risk Profiling
 # ============================================
 
 @app.post("/api/clients/", response_model=ClientResponse)
-def create_client(client: ClientCreate, db: Session = Depends(database.get_db)):
+def create_client(client: ClientCreate, db: Session = Depends(database.get_db), current_user: database.User = Depends(get_current_user)):
     """
     Register a new client with automatic AI-based risk profiling
     """
@@ -161,7 +286,7 @@ def create_client(client: ClientCreate, db: Session = Depends(database.get_db)):
     return db_client
 
 @app.get("/api/clients/", response_model=List[ClientResponse])
-def get_all_clients(skip: int = 0, limit: int = 100, db: Session = Depends(database.get_db)):
+def get_all_clients(skip: int = 0, limit: int = 100, db: Session = Depends(database.get_db), current_user: database.User = Depends(get_current_user)):
     """
     Get all registered clients
     """
@@ -169,7 +294,7 @@ def get_all_clients(skip: int = 0, limit: int = 100, db: Session = Depends(datab
     return clients
 
 @app.get("/api/clients/{client_id}", response_model=ClientResponse)
-def get_client(client_id: int, db: Session = Depends(database.get_db)):
+def get_client(client_id: int, db: Session = Depends(database.get_db), current_user: database.User = Depends(get_current_user)):
     """
     Get a specific client by ID
     """
@@ -179,7 +304,7 @@ def get_client(client_id: int, db: Session = Depends(database.get_db)):
     return client
 
 @app.put("/api/clients/{client_id}", response_model=ClientResponse)
-def update_client(client_id: int, updated_client: ClientUpdate, db: Session = Depends(database.get_db)):
+def update_client(client_id: int, updated_client: ClientUpdate, db: Session = Depends(database.get_db), current_user: database.User = Depends(get_current_user)):
     """
     Update an existing client and refresh their risk profile when needed
     """
@@ -211,7 +336,7 @@ def update_client(client_id: int, updated_client: ClientUpdate, db: Session = De
     return client
 
 @app.delete("/api/clients/{client_id}")
-def delete_client(client_id: int, db: Session = Depends(database.get_db)):
+def delete_client(client_id: int, db: Session = Depends(database.get_db), current_user: database.User = Depends(get_current_user)):
     """
     Delete a client and all associated records
     """
@@ -228,7 +353,7 @@ def delete_client(client_id: int, db: Session = Depends(database.get_db)):
 # ============================================
 
 @app.post("/api/loans/suggest")
-def get_loan_suggestions(request: LoanSuggestionRequest, db: Session = Depends(database.get_db)):
+def get_loan_suggestions(request: LoanSuggestionRequest, db: Session = Depends(database.get_db), current_user: database.User = Depends(get_current_user)):
     """
     Get AI-powered loan term suggestions for a client
     """
@@ -248,7 +373,7 @@ def get_loan_suggestions(request: LoanSuggestionRequest, db: Session = Depends(d
     return suggestions
 
 @app.post("/api/loans/", response_model=LoanResponse)
-def create_loan(loan: LoanCreate, db: Session = Depends(database.get_db)):
+def create_loan(loan: LoanCreate, db: Session = Depends(database.get_db), current_user: database.User = Depends(get_current_user)):
     """
     Create a new loan with automatic repayment schedule generation
     """
@@ -297,7 +422,7 @@ def create_loan(loan: LoanCreate, db: Session = Depends(database.get_db)):
     return db_loan
 
 @app.get("/api/loans/", response_model=List[LoanResponse])
-def get_all_loans(skip: int = 0, limit: int = 100, db: Session = Depends(database.get_db)):
+def get_all_loans(skip: int = 0, limit: int = 100, db: Session = Depends(database.get_db), current_user: database.User = Depends(get_current_user)):
     """
     Get all loans
     """
@@ -305,7 +430,7 @@ def get_all_loans(skip: int = 0, limit: int = 100, db: Session = Depends(databas
     return loans
 
 @app.get("/api/loans/{loan_id}", response_model=LoanResponse)
-def get_loan(loan_id: int, db: Session = Depends(database.get_db)):
+def get_loan(loan_id: int, db: Session = Depends(database.get_db), current_user: database.User = Depends(get_current_user)):
     """
     Get a specific loan by ID
     """
@@ -315,7 +440,7 @@ def get_loan(loan_id: int, db: Session = Depends(database.get_db)):
     return loan
 
 @app.put("/api/loans/{loan_id}", response_model=LoanResponse)
-def update_loan(loan_id: int, updated_loan: LoanUpdate, db: Session = Depends(database.get_db)):
+def update_loan(loan_id: int, updated_loan: LoanUpdate, db: Session = Depends(database.get_db), current_user: database.User = Depends(get_current_user)):
     """
     Update an existing loan. If financial terms change, regenerate the repayment schedule.
     """
@@ -360,7 +485,7 @@ def update_loan(loan_id: int, updated_loan: LoanUpdate, db: Session = Depends(da
     return loan
 
 @app.delete("/api/loans/{loan_id}")
-def delete_loan(loan_id: int, db: Session = Depends(database.get_db)):
+def delete_loan(loan_id: int, db: Session = Depends(database.get_db), current_user: database.User = Depends(get_current_user)):
     """
     Delete a loan and its installments
     """
@@ -373,7 +498,7 @@ def delete_loan(loan_id: int, db: Session = Depends(database.get_db)):
     return {"message": "Loan deleted successfully"}
 
 @app.get("/api/clients/{client_id}/loans", response_model=List[LoanResponse])
-def get_client_loans(client_id: int, db: Session = Depends(database.get_db)):
+def get_client_loans(client_id: int, db: Session = Depends(database.get_db), current_user: database.User = Depends(get_current_user)):
     """
     Get all loans for a specific client
     """
@@ -385,7 +510,7 @@ def get_client_loans(client_id: int, db: Session = Depends(database.get_db)):
 # ============================================
 
 @app.get("/api/loans/{loan_id}/installments", response_model=List[InstallmentResponse])
-def get_loan_installments(loan_id: int, db: Session = Depends(database.get_db)):
+def get_loan_installments(loan_id: int, db: Session = Depends(database.get_db), current_user: database.User = Depends(get_current_user)):
     """
     Get all installments for a specific loan
     """
@@ -397,7 +522,7 @@ def get_loan_installments(loan_id: int, db: Session = Depends(database.get_db)):
     return installments
 
 @app.put("/api/installments/{installment_id}/pay")
-def mark_installment_paid(installment_id: int, db: Session = Depends(database.get_db)):
+def mark_installment_paid(installment_id: int, db: Session = Depends(database.get_db), current_user: database.User = Depends(get_current_user)):
     """
     Mark an installment as paid
     """
@@ -423,7 +548,7 @@ def mark_installment_paid(installment_id: int, db: Session = Depends(database.ge
     return {"message": "Installment marked as paid", "installment": installment}
 
 @app.put("/api/loans/{loan_id}/mark-all-paid")
-def mark_all_installments_paid(loan_id: int, db: Session = Depends(database.get_db)):
+def mark_all_installments_paid(loan_id: int, db: Session = Depends(database.get_db), current_user: database.User = Depends(get_current_user)):
     """
     Mark every installment for a loan as paid (bulk close)
     """
@@ -447,7 +572,7 @@ def mark_all_installments_paid(loan_id: int, db: Session = Depends(database.get_
     return {"message": f"Marked {updated} installments as paid", "completed": True}
 
 @app.put("/api/installments/update-overdue")
-def update_overdue_status(db: Session = Depends(database.get_db)):
+def update_overdue_status(db: Session = Depends(database.get_db), current_user: database.User = Depends(get_current_user)):
     """
     Update overdue status for all unpaid installments
     """
@@ -467,7 +592,7 @@ def update_overdue_status(db: Session = Depends(database.get_db)):
     return {"message": f"Updated {count} overdue installments"}
 
 @app.get("/api/loans/{loan_id}/alerts")
-def get_loan_alerts(loan_id: int, db: Session = Depends(database.get_db)):
+def get_loan_alerts(loan_id: int, db: Session = Depends(database.get_db), current_user: database.User = Depends(get_current_user)):
     """
     Get default alerts for a specific loan using AI
     """
@@ -509,7 +634,7 @@ def get_loan_alerts(loan_id: int, db: Session = Depends(database.get_db)):
     }
 
 @app.get("/api/alerts/all")
-def get_all_alerts(db: Session = Depends(database.get_db)):
+def get_all_alerts(db: Session = Depends(database.get_db), current_user: database.User = Depends(get_current_user)):
     """
     Get alerts for all active loans
     """
@@ -537,7 +662,7 @@ def get_all_alerts(db: Session = Depends(database.get_db)):
 # ============================================
 
 @app.get("/api/dashboard/stats")
-def get_dashboard_stats(db: Session = Depends(database.get_db)):
+def get_dashboard_stats(db: Session = Depends(database.get_db), current_user: database.User = Depends(get_current_user)):
     """
     Get comprehensive dashboard statistics
     """

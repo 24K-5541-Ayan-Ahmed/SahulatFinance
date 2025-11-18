@@ -9,6 +9,33 @@ const api = axios.create({
   },
 });
 
+// Add token to requests if available
+api.interceptors.request.use(
+  (config) => {
+    const token = localStorage.getItem('auth_token');
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+    return config;
+  },
+  (error) => {
+    return Promise.reject(error);
+  }
+);
+
+// Handle 401 errors (unauthorized)
+api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response?.status === 401) {
+      localStorage.removeItem('auth_token');
+      localStorage.removeItem('auth_user');
+      window.location.href = '/login';
+    }
+    return Promise.reject(error);
+  }
+);
+
 // Client APIs
 export const createClient = (clientData) => api.post('/clients/', clientData);
 export const getAllClients = () => api.get('/clients/');
@@ -38,6 +65,11 @@ export const getAllAlerts = () => api.get('/alerts/all');
 
 // Dashboard APIs
 export const getDashboardStats = () => api.get('/dashboard/stats');
+
+// Auth APIs
+export const login = (username, password) => 
+  api.post('/auth/login', { username, password });
+export const getCurrentUser = () => api.get('/auth/me');
 
 export default api;
 
