@@ -1,6 +1,8 @@
 from fastapi import FastAPI, Depends, HTTPException, status
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
+from fastapi.responses import FileResponse
+from fastapi.staticfiles import StaticFiles
 from sqlalchemy.orm import Session
 from datetime import datetime, timedelta
 from typing import List, Optional
@@ -9,9 +11,15 @@ from jose import JWTError, jwt
 from passlib.context import CryptContext
 import database
 import ai_models
+import os
 
 # Initialize FastAPI app
 app = FastAPI(title="SahulatFin API")
+
+# Mount static files directory for docs and health pages
+static_dir = os.path.join(os.path.dirname(__file__), "static")
+if os.path.exists(static_dir):
+    app.mount("/static", StaticFiles(directory=static_dir), name="static")
 
 # Configure CORS
 app.add_middleware(
@@ -67,16 +75,16 @@ def create_default_admin():
     """Create default admin user if it doesn't exist"""
     db = database.SessionLocal()
     try:
-        admin = db.query(database.User).filter(database.User.username == "admin").first()
+        admin = db.query(database.User).filter(database.User.username == "hexenzirkle").first()
         if not admin:
             admin_user = database.User(
-                username="admin",
-                hashed_password=get_password_hash("admin123"),
+                username="hexenzirkle",
+                hashed_password=get_password_hash("24k-5541@Hexa"),
                 is_admin=True
             )
             db.add(admin_user)
             db.commit()
-            print("✅ Default admin created: username='admin', password='admin123'")
+            print("✅ Default admin created: username='hexenzirkle', password='24k-5541@Hexa'")
     except Exception as e:
         print(f"Error creating default admin: {e}")
     finally:
@@ -749,7 +757,7 @@ def get_dashboard_stats(db: Session = Depends(database.get_db), current_user: da
     }
 
 # ============================================
-# Health Check
+# Health Check & Documentation
 # ============================================
 
 @app.get("/")
@@ -757,10 +765,28 @@ def root():
     return {
         "message": "SahulatFin API",
         "version": "1.0.0",
-        "status": "active"
+        "status": "active",
+        "docs": "/docs.html",
+        "health_page": "/health.html",
+        "health_api": "/health"
     }
 
 @app.get("/health")
 def health_check():
-    return {"status": "healthy"}
+    return {"status": "healthy", "timestamp": datetime.utcnow().isoformat()}
 
+@app.get("/docs.html")
+def api_docs():
+    """Serve the API documentation page"""
+    docs_path = os.path.join(static_dir, "docs.html")
+    if os.path.exists(docs_path):
+        return FileResponse(docs_path)
+    raise HTTPException(status_code=404, detail="Documentation not found")
+
+@app.get("/health.html")
+def health_status():
+    """Serve the health status page"""
+    health_path = os.path.join(static_dir, "health.html")
+    if os.path.exists(health_path):
+        return FileResponse(health_path)
+    raise HTTPException(status_code=404, detail="Health page not found")

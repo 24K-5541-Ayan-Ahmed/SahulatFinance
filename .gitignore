@@ -1,0 +1,22 @@
+# Exclude backend.zip
+backend/backend.zip
+
+# Exclude dist folders
+frontend/dist new og/
+frontend/dist og/
+
+# Common exclusions
+node_modules/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+env/
+venv/
+*.db
+*.sqlite
+*.sqlite3
+.DS_Store
+*.log
+

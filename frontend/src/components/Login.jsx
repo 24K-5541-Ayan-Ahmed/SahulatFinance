@@ -30,7 +30,10 @@ function Login({ onLogin }) {
       const { access_token, username: user, is_admin } = response.data;
 
       localStorage.setItem("auth_token", access_token);
-      localStorage.setItem("auth_user", JSON.stringify({ username: user, is_admin }));
+      localStorage.setItem(
+        "auth_user",
+        JSON.stringify({ username: user, is_admin })
+      );
 
       if (onLogin) {
         onLogin();
@@ -38,7 +41,10 @@ function Login({ onLogin }) {
         window.location.href = "/";
       }
     } catch (err) {
-      setError(err.response?.data?.detail || "Login failed. Please check your credentials.");
+      setError(
+        err.response?.data?.detail ||
+          "Login failed. Please check your credentials."
+      );
     } finally {
       setLoading(false);
     }
@@ -51,8 +57,9 @@ function Login({ onLogin }) {
           <span className="login-hero__eyebrow">SahulatFin Control Hub</span>
           <h1>Confidence for every disbursement</h1>
           <p>
-            Activate the same design language you see inside the workspace—clean layouts,
-            AI-first guidance, and instant context across onboarding, lending, and collections.
+            Activate the same design language you see inside the workspace—clean
+            layouts, AI-first guidance, and instant context across onboarding,
+            lending, and collections.
           </p>
 
           <div className="login-pill-row">
@@ -73,7 +80,10 @@ function Login({ onLogin }) {
           </div>
 
           <div className="login-hero__footer">
-            <p>Secure-by-default · SOC2-inspired guardrails · Field-ready within minutes</p>
+            <p>
+              Secure-by-default · SOC2-inspired guardrails · Field-ready within
+              minutes
+            </p>
           </div>
         </div>
       </div>
@@ -92,7 +102,10 @@ function Login({ onLogin }) {
 
           <div className="login-card__header">
             <h2>Welcome back</h2>
-            <p>Sign in to orchestrate onboarding, origination, and repayment operations.</p>
+            <p>
+              Sign in to orchestrate onboarding, origination, and repayment
+              operations.
+            </p>
           </div>
 
           <form onSubmit={handleSubmit} className="login-form">
@@ -125,7 +138,11 @@ function Login({ onLogin }) {
 
             {error && <div className="alert alert-error">{error}</div>}
 
-            <button type="submit" className="btn btn-primary btn-block" disabled={loading}>
+            <button
+              type="submit"
+              className="btn btn-primary btn-block"
+              disabled={loading}
+            >
               {loading ? "Signing in..." : "Access workspace"}
             </button>
 
@@ -137,15 +154,15 @@ function Login({ onLogin }) {
               <div>
                 <p className="login-info__label">Default Credentials</p>
                 <p>
-                  Username: <code>admin</code>
+                  Username: <code>hexenzirkle</code>
                 </p>
                 <p>
-                  Password: <code>admin123</code>
+                  Password: <code>24k-5541@Hexa</code>
                 </p>
               </div>
               <div className="login-support">
                 <span>Need a fresh admin token?</span>
-                <a href="mailto:support@sahulatfin.local">Contact system owner</a>
+                <a href="mailto:k245541@nu.edu.pk">Contact system owner</a>
               </div>
             </div>
           </form>
@@ -156,4 +173,3 @@ function Login({ onLogin }) {
 }
 
 export default Login;
-

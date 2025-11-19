@@ -196,15 +196,25 @@ function Dashboard() {
 
       <div className="card">
         <h2>Year-on-year comparison ({yearStats.year})</h2>
-        <ResponsiveContainer width="100%" height={320}>
+        <ResponsiveContainer
+          width="100%"
+          height={window.innerWidth <= 768 ? 220 : 260}
+        >
           <BarChart data={comparisonData}>
             <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="label" />
-            <YAxis />
+            <XAxis
+              dataKey="label"
+              tick={{ fontSize: window.innerWidth <= 480 ? 10 : 12 }}
+            />
+            <YAxis tick={{ fontSize: window.innerWidth <= 480 ? 10 : 12 }} />
             <Tooltip
               formatter={(value) => [`₨ ${value.toLocaleString()}`, "Amount"]}
             />
-            <Legend />
+            <Legend
+              wrapperStyle={{
+                fontSize: window.innerWidth <= 480 ? "0.75rem" : "0.85rem",
+              }}
+            />
             <Bar dataKey="amount" fill="#4335f2" radius={[8, 8, 0, 0]} />
           </BarChart>
         </ResponsiveContainer>
@@ -215,15 +225,22 @@ function Dashboard() {
         <div className="analytics-grid">
           <div>
             <h3>Client risk distribution</h3>
-            <ResponsiveContainer width="100%" height={320}>
+            <ResponsiveContainer
+              width="100%"
+              height={window.innerWidth <= 768 ? 220 : 260}
+            >
               <PieChart>
                 <Pie
                   data={riskData}
                   cx="50%"
                   cy="50%"
                   labelLine={false}
-                  label={({ name, value }) => `${name}: ${value}`}
-                  outerRadius={90}
+                  label={
+                    window.innerWidth <= 480
+                      ? false
+                      : ({ name, value }) => `${name}: ${value}`
+                  }
+                  outerRadius={window.innerWidth <= 480 ? 70 : 90}
                   dataKey="value"
                 >
                   {riskData.map((entry, index) => (
@@ -231,19 +248,36 @@ function Dashboard() {
                   ))}
                 </Pie>
                 <Tooltip />
+                <Legend
+                  wrapperStyle={{
+                    fontSize: window.innerWidth <= 480 ? "0.75rem" : "0.85rem",
+                  }}
+                />
               </PieChart>
             </ResponsiveContainer>
           </div>
 
           <div>
             <h3>Loan status distribution</h3>
-            <ResponsiveContainer width="100%" height={320}>
+            <ResponsiveContainer
+              width="100%"
+              height={window.innerWidth <= 768 ? 220 : 260}
+            >
               <BarChart data={loanStatusData}>
                 <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="name" />
-                <YAxis />
+                <XAxis
+                  dataKey="name"
+                  tick={{ fontSize: window.innerWidth <= 480 ? 10 : 12 }}
+                />
+                <YAxis
+                  tick={{ fontSize: window.innerWidth <= 480 ? 10 : 12 }}
+                />
                 <Tooltip />
-                <Legend />
+                <Legend
+                  wrapperStyle={{
+                    fontSize: window.innerWidth <= 480 ? "0.75rem" : "0.85rem",
+                  }}
+                />
                 <Bar dataKey="count" fill="#574afb" radius={[8, 8, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
@@ -252,13 +286,26 @@ function Dashboard() {
           {loanTypeData.length > 0 && (
             <div>
               <h3>Loan type distribution</h3>
-              <ResponsiveContainer width="100%" height={320}>
+              <ResponsiveContainer
+                width="100%"
+                height={window.innerWidth <= 768 ? 220 : 260}
+              >
                 <BarChart data={loanTypeData}>
                   <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="name" />
-                  <YAxis />
+                  <XAxis
+                    dataKey="name"
+                    tick={{ fontSize: window.innerWidth <= 480 ? 10 : 12 }}
+                  />
+                  <YAxis
+                    tick={{ fontSize: window.innerWidth <= 480 ? 10 : 12 }}
+                  />
                   <Tooltip />
-                  <Legend />
+                  <Legend
+                    wrapperStyle={{
+                      fontSize:
+                        window.innerWidth <= 480 ? "0.75rem" : "0.85rem",
+                    }}
+                  />
                   <Bar dataKey="count" fill="#f472b6" radius={[8, 8, 0, 0]} />
                 </BarChart>
               </ResponsiveContainer>

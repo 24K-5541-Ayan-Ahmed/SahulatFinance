@@ -1,0 +1,868 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SahulatFin API Documentation</title>
+    
+    <!-- Primary Meta Tags -->
+    <meta name="title" content="SahulatFin API Documentation">
+    <meta name="description" content="Complete API documentation for SahulatFin - AI-Enhanced Microfinance Loan Management System. 23+ endpoints covering authentication, client management, loans, repayments, and analytics.">
+    <meta name="keywords" content="API, Documentation, SahulatFin, Microfinance, REST API, AI, Loan Management">
+    <meta name="author" content="SahulatFin">
+    
+    <!-- Open Graph / Facebook / WhatsApp -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="">
+    <meta property="og:title" content="📚 SahulatFin API Documentation">
+    <meta property="og:description" content="Complete API documentation for SahulatFin - AI-Enhanced Microfinance Loan Management System. 23+ endpoints covering authentication, client management, loans, repayments, and analytics.">
+    <meta property="og:image" content="/static/logo.png">
+    <meta property="og:image:width" content="512">
+    <meta property="og:image:height" content="512">
+    <meta property="og:site_name" content="SahulatFin">
+    
+    <!-- Twitter Card -->
+    <meta property="twitter:card" content="summary">
+    <meta property="twitter:url" content="">
+    <meta property="twitter:title" content="📚 SahulatFin API Documentation">
+    <meta property="twitter:description" content="Complete API documentation - AI-Enhanced Microfinance Loan Management System">
+    <meta property="twitter:image" content="/static/logo.png">
+    
+    <!-- Discord Embed Color -->
+    <meta name="theme-color" content="#574afb">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #574afb;
+            --primary-dark: #4335f2;
+            --bg: #0a0e1a;
+            --surface: #12172a;
+            --surface-light: #1a2035;
+            --text: #f4f5fa;
+            --text-muted: #9ca3af;
+            --success: #0bbf74;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --border: rgba(255, 255, 255, 0.1);
+        }
+
+        body {
+            font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background: linear-gradient(135deg, var(--bg) 0%, #0d1220 50%, #0a0e1a 100%);
+            color: var(--text);
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        header {
+            text-align: center;
+            padding: 3rem 0;
+            border-bottom: 1px solid var(--border);
+            margin-bottom: 3rem;
+        }
+
+        .logo {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            border-radius: 20px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            font-weight: bold;
+            margin-bottom: 1rem;
+            box-shadow: 0 20px 60px rgba(87, 74, 251, 0.4);
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(135deg, #fff, var(--text-muted));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .subtitle {
+            color: var(--text-muted);
+            font-size: 1.1rem;
+        }
+
+        .version {
+            display: inline-block;
+            background: rgba(87, 74, 251, 0.2);
+            color: var(--primary);
+            padding: 0.25rem 1rem;
+            border-radius: 999px;
+            font-size: 0.85rem;
+            margin-top: 1rem;
+            border: 1px solid rgba(87, 74, 251, 0.3);
+        }
+
+        .section {
+            background: var(--surface);
+            border-radius: 18px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            border: 1px solid var(--border);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .section h2 {
+            font-size: 1.8rem;
+            margin-bottom: 1.5rem;
+            color: var(--text);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .section h2::before {
+            content: '';
+            width: 4px;
+            height: 32px;
+            background: linear-gradient(180deg, var(--primary), var(--primary-dark));
+            border-radius: 4px;
+        }
+
+        .endpoint-group {
+            margin-bottom: 2rem;
+        }
+
+        .endpoint-group h3 {
+            font-size: 1.3rem;
+            color: var(--text-muted);
+            margin-bottom: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            font-size: 0.9rem;
+        }
+
+        .endpoint {
+            background: var(--surface-light);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            border: 1px solid var(--border);
+            transition: all 0.3s ease;
+        }
+
+        .endpoint:hover {
+            border-color: rgba(87, 74, 251, 0.5);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(87, 74, 251, 0.15);
+        }
+
+        .endpoint-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .method {
+            padding: 0.35rem 0.85rem;
+            border-radius: 8px;
+            font-weight: 700;
+            font-size: 0.75rem;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+        }
+
+        .method.get { background: rgba(11, 191, 116, 0.2); color: #0bbf74; }
+        .method.post { background: rgba(59, 130, 246, 0.2); color: #3b82f6; }
+        .method.put { background: rgba(245, 158, 11, 0.2); color: #f59e0b; }
+        .method.delete { background: rgba(239, 68, 68, 0.2); color: #ef4444; }
+
+        .endpoint-path {
+            font-family: 'Courier New', monospace;
+            color: var(--text);
+            font-weight: 600;
+            font-size: 1rem;
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .auth-badge {
+            padding: 0.25rem 0.75rem;
+            background: rgba(239, 68, 68, 0.15);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            border-radius: 6px;
+            font-size: 0.75rem;
+            color: #ef4444;
+            display: flex;
+            align-items: center;
+            gap: 0.35rem;
+        }
+
+        .auth-badge.public {
+            background: rgba(11, 191, 116, 0.15);
+            border-color: rgba(11, 191, 116, 0.3);
+            color: #0bbf74;
+        }
+
+        .endpoint-description {
+            color: var(--text-muted);
+            margin-bottom: 1rem;
+            line-height: 1.5;
+        }
+
+        .params {
+            display: grid;
+            gap: 0.75rem;
+        }
+
+        .param {
+            background: var(--bg);
+            padding: 0.85rem;
+            border-radius: 8px;
+            border-left: 3px solid var(--primary);
+        }
+
+        .param-name {
+            font-family: 'Courier New', monospace;
+            color: var(--primary);
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+
+        .param-type {
+            display: inline-block;
+            background: rgba(87, 74, 251, 0.15);
+            color: var(--text-muted);
+            padding: 0.15rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            margin-left: 0.5rem;
+        }
+
+        .param-desc {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            margin-top: 0.25rem;
+        }
+
+        .code-block {
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 1.25rem;
+            margin-top: 1rem;
+            overflow-x: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 0.85rem;
+            line-height: 1.6;
+        }
+
+        .code-block pre {
+            margin: 0;
+            color: #a5d6ff;
+        }
+
+        .response-section {
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid var(--border);
+        }
+
+        .response-title {
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+            color: var(--text);
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .quick-links {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+            margin-bottom: 3rem;
+        }
+
+        .quick-link {
+            background: var(--surface);
+            padding: 1.5rem;
+            border-radius: 14px;
+            border: 1px solid var(--border);
+            text-decoration: none;
+            color: var(--text);
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .quick-link:hover {
+            border-color: var(--primary);
+            transform: translateY(-4px);
+            box-shadow: 0 15px 40px rgba(87, 74, 251, 0.2);
+        }
+
+        .quick-link h3 {
+            font-size: 1.1rem;
+            color: var(--primary);
+        }
+
+        .quick-link p {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        .base-url {
+            background: var(--surface-light);
+            padding: 1rem 1.5rem;
+            border-radius: 10px;
+            border: 1px solid var(--border);
+            font-family: 'Courier New', monospace;
+            color: var(--success);
+            text-align: center;
+            font-size: 1.1rem;
+            margin-bottom: 2rem;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+            }
+
+            h1 {
+                font-size: 2rem;
+            }
+
+            .endpoint-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .section {
+                padding: 1.25rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="logo">SF</div>
+            <h1>SahulatFin API</h1>
+            <p class="subtitle">AI-Enhanced Microfinance Loan Management System</p>
+            <span class="version">v1.0.0</span>
+        </header>
+
+        <div class="base-url" id="baseUrl">Loading API URL...</div>
+
+        <div class="quick-links">
+            <a href="#auth" class="quick-link">
+                <h3>🔐 Authentication</h3>
+                <p>Login and session management</p>
+            </a>
+            <a href="#clients" class="quick-link">
+                <h3>👥 Clients</h3>
+                <p>Client onboarding & management</p>
+            </a>
+            <a href="#loans" class="quick-link">
+                <h3>💰 Loans</h3>
+                <p>Loan applications & tracking</p>
+            </a>
+            <a href="#repayments" class="quick-link">
+                <h3>💳 Repayments</h3>
+                <p>Installment tracking & payments</p>
+            </a>
+            <a href="#analytics" class="quick-link">
+                <h3>📊 Analytics</h3>
+                <p>Dashboard stats & alerts</p>
+            </a>
+        </div>
+
+        <!-- Authentication Endpoints -->
+        <div class="section" id="auth">
+            <h2>Authentication</h2>
+            
+            <div class="endpoint-group">
+                <div class="endpoint">
+                    <div class="endpoint-header">
+                        <span class="method post">POST</span>
+                        <span class="endpoint-path">/api/auth/login</span>
+                        <span class="auth-badge public">🌐 Public</span>
+                    </div>
+                    <div class="endpoint-description">
+                        Authenticate admin user and receive JWT access token for subsequent API requests.
+                    </div>
+                    <div class="params">
+                        <div class="param">
+                            <div class="param-name">username <span class="param-type">string</span></div>
+                            <div class="param-desc">Admin username (default: admin)</div>
+                        </div>
+                        <div class="param">
+                            <div class="param-name">password <span class="param-type">string</span></div>
+                            <div class="param-desc">Admin password (default: admin123)</div>
+                        </div>
+                    </div>
+                    <div class="response-section">
+                        <div class="response-title">📤 Response</div>
+                        <div class="code-block">
+<pre>{
+  "access_token": "eyJhbGc...",
+  "token_type": "bearer",
+  "username": "admin",
+  "is_admin": true
+}</pre>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="endpoint">
+                    <div class="endpoint-header">
+                        <span class="method get">GET</span>
+                        <span class="endpoint-path">/api/auth/me</span>
+                        <span class="auth-badge">🔒 Protected</span>
+                    </div>
+                    <div class="endpoint-description">
+                        Get current authenticated user information.
+                    </div>
+                    <div class="response-section">
+                        <div class="response-title">📤 Response</div>
+                        <div class="code-block">
+<pre>{
+  "username": "admin",
+  "is_admin": true
+}</pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Client Endpoints -->
+        <div class="section" id="clients">
+            <h2>Client Management</h2>
+            
+            <div class="endpoint-group">
+                <div class="endpoint">
+                    <div class="endpoint-header">
+                        <span class="method post">POST</span>
+                        <span class="endpoint-path">/api/clients/</span>
+                        <span class="auth-badge">🔒 Protected</span>
+                    </div>
+                    <div class="endpoint-description">
+                        Register a new client with AI-powered risk assessment.
+                    </div>
+                    <div class="params">
+                        <div class="param">
+                            <div class="param-name">name <span class="param-type">string</span></div>
+                            <div class="param-desc">Full name of the client</div>
+                        </div>
+                        <div class="param">
+                            <div class="param-name">cnic <span class="param-type">string</span></div>
+                            <div class="param-desc">National ID (format: xxxxx-xxxxxxx-x)</div>
+                        </div>
+                        <div class="param">
+                            <div class="param-name">phone <span class="param-type">string</span></div>
+                            <div class="param-desc">Contact phone number</div>
+                        </div>
+                        <div class="param">
+                            <div class="param-name">address <span class="param-type">string</span></div>
+                            <div class="param-desc">Residential address</div>
+                        </div>
+                        <div class="param">
+                            <div class="param-name">monthly_income <span class="param-type">number</span></div>
+                            <div class="param-desc">Monthly income in PKR</div>
+                        </div>
+                        <div class="param">
+                            <div class="param-name">employment_status <span class="param-type">string</span></div>
+                            <div class="param-desc">Employed | Self-Employed | Unemployed</div>
+                        </div>
+                        <div class="param">
+                            <div class="param-name">existing_loans <span class="param-type">number</span></div>
+                            <div class="param-desc">Number of existing loans</div>
+                        </div>
+                        <div class="param">
+                            <div class="param-name">credit_history <span class="param-type">string</span></div>
+                            <div class="param-desc">Good | Average | Poor</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="endpoint">
+                    <div class="endpoint-header">
+                        <span class="method get">GET</span>
+                        <span class="endpoint-path">/api/clients/</span>
+                        <span class="auth-badge">🔒 Protected</span>
+                    </div>
+                    <div class="endpoint-description">
+                        Retrieve all registered clients with their risk profiles.
+                    </div>
+                </div>
+
+                <div class="endpoint">
+                    <div class="endpoint-header">
+                        <span class="method get">GET</span>
+                        <span class="endpoint-path">/api/clients/{client_id}</span>
+                        <span class="auth-badge">🔒 Protected</span>
+                    </div>
+                    <div class="endpoint-description">
+                        Get detailed information for a specific client.
+                    </div>
+                </div>
+
+                <div class="endpoint">
+                    <div class="endpoint-header">
+                        <span class="method put">PUT</span>
+                        <span class="endpoint-path">/api/clients/{client_id}</span>
+                        <span class="auth-badge">🔒 Protected</span>
+                    </div>
+                    <div class="endpoint-description">
+                        Update client information and recalculate risk score.
+                    </div>
+                </div>
+
+                <div class="endpoint">
+                    <div class="endpoint-header">
+                        <span class="method delete">DELETE</span>
+                        <span class="endpoint-path">/api/clients/{client_id}</span>
+                        <span class="auth-badge">🔒 Protected</span>
+                    </div>
+                    <div class="endpoint-description">
+                        Delete a client and all associated loans and installments.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Loan Endpoints -->
+        <div class="section" id="loans">
+            <h2>Loan Management</h2>
+            
+            <div class="endpoint-group">
+                <div class="endpoint">
+                    <div class="endpoint-header">
+                        <span class="method post">POST</span>
+                        <span class="endpoint-path">/api/loans/suggest</span>
+                        <span class="auth-badge">🔒 Protected</span>
+                    </div>
+                    <div class="endpoint-description">
+                        Get AI-powered loan term suggestions based on client profile and requested amount.
+                    </div>
+                    <div class="params">
+                        <div class="param">
+                            <div class="param-name">client_id <span class="param-type">number</span></div>
+                            <div class="param-desc">ID of the client</div>
+                        </div>
+                        <div class="param">
+                            <div class="param-name">loan_amount <span class="param-type">number</span></div>
+                            <div class="param-desc">Requested loan amount</div>
+                        </div>
+                    </div>
+                    <div class="response-section">
+                        <div class="response-title">📤 Response (AI Insights)</div>
+                        <div class="code-block">
+<pre>{
+  "recommended_interest_rate": 18.5,
+  "recommended_duration_months": 24,
+  "recommended_monthly_installment": 5234.67,
+  "risk_level": "Medium",
+  "risk_score": 45.2,
+  "approval_recommendation": "Approve",
+  "debt_service_ratio": 34.5,
+  "loan_to_income_ratio": 6.7,
+  "stress_test": {
+    "interest_rate": 23.5,
+    "monthly_installment": 5567.89
+  },
+  "max_suggested_loan": 450000,
+  "insights": [
+    "Client appears to have a stable profile..."
+  ]
+}</pre>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="endpoint">
+                    <div class="endpoint-header">
+                        <span class="method post">POST</span>
+                        <span class="endpoint-path">/api/loans/</span>
+                        <span class="auth-badge">🔒 Protected</span>
+                    </div>
+                    <div class="endpoint-description">
+                        Create a new loan with automatic installment schedule generation.
+                    </div>
+                    <div class="params">
+                        <div class="param">
+                            <div class="param-name">client_id <span class="param-type">number</span></div>
+                            <div class="param-desc">ID of the client receiving the loan</div>
+                        </div>
+                        <div class="param">
+                            <div class="param-name">loan_amount <span class="param-type">number</span></div>
+                            <div class="param-desc">Total loan amount in PKR</div>
+                        </div>
+                        <div class="param">
+                            <div class="param-name">interest_rate <span class="param-type">number</span></div>
+                            <div class="param-desc">Annual interest rate (%)</div>
+                        </div>
+                        <div class="param">
+                            <div class="param-name">duration_months <span class="param-type">number</span></div>
+                            <div class="param-desc">Loan duration in months</div>
+                        </div>
+                        <div class="param">
+                            <div class="param-name">loan_type <span class="param-type">string</span></div>
+                            <div class="param-desc">Business | Personal | Education | Agriculture</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="endpoint">
+                    <div class="endpoint-header">
+                        <span class="method get">GET</span>
+                        <span class="endpoint-path">/api/loans/</span>
+                        <span class="auth-badge">🔒 Protected</span>
+                    </div>
+                    <div class="endpoint-description">
+                        Get all loans in the system.
+                    </div>
+                </div>
+
+                <div class="endpoint">
+                    <div class="endpoint-header">
+                        <span class="method put">PUT</span>
+                        <span class="endpoint-path">/api/loans/{loan_id}</span>
+                        <span class="auth-badge">🔒 Protected</span>
+                    </div>
+                    <div class="endpoint-description">
+                        Update loan details and regenerate installment schedule.
+                    </div>
+                </div>
+
+                <div class="endpoint">
+                    <div class="endpoint-header">
+                        <span class="method delete">DELETE</span>
+                        <span class="endpoint-path">/api/loans/{loan_id}</span>
+                        <span class="auth-badge">🔒 Protected</span>
+                    </div>
+                    <div class="endpoint-description">
+                        Delete a loan and all associated installments.
+                    </div>
+                </div>
+
+                <div class="endpoint">
+                    <div class="endpoint-header">
+                        <span class="method get">GET</span>
+                        <span class="endpoint-path">/api/clients/{client_id}/loans</span>
+                        <span class="auth-badge">🔒 Protected</span>
+                    </div>
+                    <div class="endpoint-description">
+                        Get all loans for a specific client.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Repayment Endpoints -->
+        <div class="section" id="repayments">
+            <h2>Repayment Tracking</h2>
+            
+            <div class="endpoint-group">
+                <div class="endpoint">
+                    <div class="endpoint-header">
+                        <span class="method get">GET</span>
+                        <span class="endpoint-path">/api/loans/{loan_id}/installments</span>
+                        <span class="auth-badge">🔒 Protected</span>
+                    </div>
+                    <div class="endpoint-description">
+                        Get all installments for a specific loan.
+                    </div>
+                </div>
+
+                <div class="endpoint">
+                    <div class="endpoint-header">
+                        <span class="method put">PUT</span>
+                        <span class="endpoint-path">/api/installments/{installment_id}/pay</span>
+                        <span class="auth-badge">🔒 Protected</span>
+                    </div>
+                    <div class="endpoint-description">
+                        Mark an installment as paid.
+                    </div>
+                </div>
+
+                <div class="endpoint">
+                    <div class="endpoint-header">
+                        <span class="method put">PUT</span>
+                        <span class="endpoint-path">/api/loans/{loan_id}/mark-all-paid</span>
+                        <span class="auth-badge">🔒 Protected</span>
+                    </div>
+                    <div class="endpoint-description">
+                        Mark all installments for a loan as paid (bulk settlement).
+                    </div>
+                </div>
+
+                <div class="endpoint">
+                    <div class="endpoint-header">
+                        <span class="method put">PUT</span>
+                        <span class="endpoint-path">/api/installments/update-overdue</span>
+                        <span class="auth-badge">🔒 Protected</span>
+                    </div>
+                    <div class="endpoint-description">
+                        Update overdue status for all unpaid installments past their due date.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Analytics Endpoints -->
+        <div class="section" id="analytics">
+            <h2>Analytics & Alerts</h2>
+            
+            <div class="endpoint-group">
+                <div class="endpoint">
+                    <div class="endpoint-header">
+                        <span class="method get">GET</span>
+                        <span class="endpoint-path">/api/dashboard/stats</span>
+                        <span class="auth-badge">🔒 Protected</span>
+                    </div>
+                    <div class="endpoint-description">
+                        Get comprehensive dashboard statistics including clients, loans, financials, and yearly comparisons.
+                    </div>
+                    <div class="response-section">
+                        <div class="response-title">📤 Response Structure</div>
+                        <div class="code-block">
+<pre>{
+  "clients": {
+    "total": 150,
+    "risk_distribution": {...}
+  },
+  "loans": {
+    "total": 245,
+    "active": 180,
+    "completed": 50,
+    "defaulted": 15
+  },
+  "financial": {
+    "total_disbursed": 12500000,
+    "total_expected": 14750000,
+    "total_collected": 9800000
+  },
+  "yearly_stats": {
+    "year": 2025,
+    "total_disbursed": 8900000,
+    "total_expected": 10500000,
+    "total_collected": 7200000
+  }
+}</pre>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="endpoint">
+                    <div class="endpoint-header">
+                        <span class="method get">GET</span>
+                        <span class="endpoint-path">/api/loans/{loan_id}/alerts</span>
+                        <span class="auth-badge">🔒 Protected</span>
+                    </div>
+                    <div class="endpoint-description">
+                        Get AI-generated default risk alerts for a specific loan.
+                    </div>
+                </div>
+
+                <div class="endpoint">
+                    <div class="endpoint-header">
+                        <span class="method get">GET</span>
+                        <span class="endpoint-path">/api/alerts/all</span>
+                        <span class="auth-badge">🔒 Protected</span>
+                    </div>
+                    <div class="endpoint-description">
+                        Get all high-risk clients with overdue payments and exposure details.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- System Endpoints -->
+        <div class="section">
+            <h2>System</h2>
+            
+            <div class="endpoint-group">
+                <div class="endpoint">
+                    <div class="endpoint-header">
+                        <span class="method get">GET</span>
+                        <span class="endpoint-path">/</span>
+                        <span class="auth-badge public">🌐 Public</span>
+                    </div>
+                    <div class="endpoint-description">
+                        Welcome message and API information.
+                    </div>
+                </div>
+
+                <div class="endpoint">
+                    <div class="endpoint-header">
+                        <span class="method get">GET</span>
+                        <span class="endpoint-path">/health</span>
+                        <span class="auth-badge public">🌐 Public</span>
+                    </div>
+                    <div class="endpoint-description">
+                        Health check endpoint for monitoring API status.
+                    </div>
+                    <div class="response-section">
+                        <div class="response-title">📤 Response</div>
+                        <div class="code-block">
+<pre>{
+  "status": "healthy",
+  "timestamp": "2025-01-20T10:30:00Z"
+}</pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>Authentication Guide</h2>
+            <div class="endpoint-description" style="margin-bottom: 1rem;">
+                All protected endpoints require a Bearer token in the Authorization header:
+            </div>
+            <div class="code-block">
+<pre>Authorization: Bearer YOUR_ACCESS_TOKEN
+
+Example using fetch:
+fetch('https://your-api.com/api/clients/', {
+  headers: {
+    'Authorization': 'Bearer ' + token,
+    'Content-Type': 'application/json'
+  }
+})</pre>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Set the base URL dynamically
+        const baseUrl = window.location.origin;
+        document.getElementById('baseUrl').textContent = baseUrl;
+        
+        // Update OG meta tags with actual URL and logo
+        const currentUrl = window.location.href;
+        const logoUrl = `${baseUrl}/static/logo.png`;
+        
+        document.querySelector('meta[property="og:url"]').setAttribute('content', currentUrl);
+        document.querySelector('meta[property="twitter:url"]').setAttribute('content', currentUrl);
+        document.querySelector('meta[property="og:image"]').setAttribute('content', logoUrl);
+        document.querySelector('meta[property="twitter:image"]').setAttribute('content', logoUrl);
+    </script>
+</body>
+</html>
+
